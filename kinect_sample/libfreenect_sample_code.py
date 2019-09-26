@@ -45,7 +45,7 @@ if __name__ == "__main__":
     disp_size = (640, 480)
     pygame.init()
     screen = pygame.display.set_mode(disp_size)
-    font = pygame.font.Font('slkscr.ttf', 32) # provide your own font 
+    font = pygame.font.Font('NanumGothic.ttf', 32) # provide your own font 
     while True:
         events = pygame.event.get()
         for e in events:
