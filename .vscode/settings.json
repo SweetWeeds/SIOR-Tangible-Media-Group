@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/home/han/anaconda3/envs/SIOR_TMG/bin/python",
+    "python.pythonPath": "C:\\Users\\khk02\\Anaconda3\\python.exe",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true
 }
