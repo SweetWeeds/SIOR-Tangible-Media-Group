@@ -28,6 +28,7 @@ class Matrix:
     def __getitem__(self, index):
         return self.mEntryList[index]
 
+
 # 성분 객체
 class Entry:
     row = int(-1)
