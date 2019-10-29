@@ -5,12 +5,15 @@
 from __future__ import division
 import time
 import Adafruit_PCA9685
+import threading
 
 #BUSNUM = 2
 PCA_MODULE_NUM = 8      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
 ROWS = 10               # 행의 수
 COLS = 10               # 열의 수
+SERVO_MIN = 150     # Min pulse length out of 4096
+SERVO_MAX = 600     # Max pulse length out of 4096
 
 # 행렬 객체 (성분 핸들러)
 class Matrix:
@@ -30,7 +33,8 @@ class Matrix:
     def Initialize(self):
         for el in self.mEntryList:
             for e in el:
-                e.applyHeight(0)
+                e.applyHeight(SERVO_MIN)
+                e.syncActivate()
 
 
 # 성분 객체
@@ -41,14 +45,26 @@ class Entry:
     channel = int(-1)
     height = int(0)     # 모터의 높낮이
     speed = int(50)     # 모터의 속도, range 0 ~ 100
+    syncActive = False  # 싱크 작동 여부
+    syncThread = None
     def __init__(self, r, c, m, ch):
         self.row = r             # 성분의 행
         self.col = c             # 성분의 열
         self.module = m          # 모듈 객체
         self.channel = ch        # 모듈에서 할당 된 채널 넘버
+    def syncHeight(self):
+        while(self.syncActive):
+            self.module.set_pwm(self.channel, 0, self.height)
+            time.sleep(0.5)
+    def syncActivate(self):
+        self.syncActive = True
+        self.syncThread = threading.Thread(target=self.syncHeight, args=(self))
+    def syncDeactivate(self):
+        self.syncActive = False
     def applyHeight(self, h = -1):
         if h != -1:
             self.height = h
+        """
         pulse_length = 1000000    # 1,000,000 us per second
         pulse_length //= 60       # 60 Hz
         # print('{0}us per period'.format(pulse_length))
@@ -56,4 +72,5 @@ class Entry:
         # print('{0}us per bit'.format(pulse_length))
         h *= 1000
         h //= pulse_length
+        """
         return self.module.set_pwm(self.channel, 0, h)  # set_pwm(채널, led_on pwm 신호, led_off pwm 신호)
