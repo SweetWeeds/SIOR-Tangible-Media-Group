@@ -22,7 +22,7 @@ class Matrix:
     def __init__(self, rows = ROWS, cols = COLS):
         self.mEntryList = list(list() for i in range(rows))
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
-        self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(hex(0x40|i)) \
+        self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(0x40|i) \
             for i in range(PCA_MODULE_NUM))
         for i in range(PCA_MODULE_NUM):
             for j in range(i * PCA_CHANNELS, i * (PCA_CHANNELS + 1) \
@@ -55,12 +55,14 @@ class Entry:
     def syncHeight(self):
         while(self.syncActive):
             self.module.set_pwm(self.channel, 0, self.height)
-            time.sleep(0.5)
-    def syncActivate(self):
-        self.syncActive = True
-        self.syncThread = threading.Thread(target=self.syncHeight, args=(self))
-    def syncDeactivate(self):
-        self.syncActive = False
+            time.sleep(0.05)
+    def syncActivate(self, Act = True):
+        if(Act):
+            self.syncActive = True
+            self.syncThread = threading.Thread(target=self.syncHeight, args=(self))
+        else:
+            self.syncActive = False
+            self.syncThread = None
     def applyHeight(self, h = -1):
         if h != -1:
             self.height = h
