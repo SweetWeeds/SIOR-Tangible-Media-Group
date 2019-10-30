@@ -12,8 +12,8 @@ PCA_MODULE_NUM = 8      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
 ROWS = 10               # 행의 수
 COLS = 10               # 열의 수
-SERVO_MIN = 150     # Min pulse length out of 4096
-SERVO_MAX = 600     # Max pulse length out of 4096
+SERVO_MIN = 150         # Min pulse length out of 4096
+SERVO_MAX = 600         # Max pulse length out of 4096
 
 # 행렬 객체 (성분 핸들러)
 class Matrix:
@@ -22,19 +22,25 @@ class Matrix:
     def __init__(self, rows = ROWS, cols = COLS):
         self.mEntryList = list(list() for i in range(rows))
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
-        self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(0x40|i) \
-            for i in range(PCA_MODULE_NUM))
+        try:
+            self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(0x40|i) \
+                for i in range(PCA_MODULE_NUM))
+        except:
+            print("[ERROR] PCA9685 Module is not available.")
         for i in range(PCA_MODULE_NUM):
             for j in range(i * PCA_CHANNELS, i * (PCA_CHANNELS + 1) \
                 if i * (PCA_CHANNELS + 1) < rows * cols else rows * cols):
                 self.mEntryList[j / cols].append(Entry(j / cols, j % cols, self.mPCA9685_Module[i], j % i))
     def __getitem__(self, index):
         return self.mEntryList[index]
-    def Initialize(self):
+    def eInitialize(self):
         for el in self.mEntryList:
             for e in el:
                 e.applyHeight(SERVO_MIN)
                 e.syncActivate()
+    def syncActivate(self, Act = True):
+        for el in self.mEntryList:
+            el.syncActivate(Act)
 
 
 # 성분 객체
@@ -52,6 +58,7 @@ class Entry:
         self.col = c             # 성분의 열
         self.module = m          # 모듈 객체
         self.channel = ch        # 모듈에서 할당 된 채널 넘버
+        self.applyHeight(SERVO_MIN)
     def syncHeight(self):
         while(self.syncActive):
             self.module.set_pwm(self.channel, 0, self.height)
