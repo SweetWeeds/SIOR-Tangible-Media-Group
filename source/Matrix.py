@@ -10,8 +10,8 @@ import threading
 #BUSNUM = 2
 PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
-ROWS = 10               # 행의 수
-COLS = 10               # 열의 수
+ROWS = 8                # 행의 수
+COLS = 8                # 열의 수
 SERVO_MIN = 150         # Min pulse length out of 4096
 SERVO_MAX = 600         # Max pulse length out of 4096
 
@@ -24,19 +24,27 @@ class Matrix:
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
         #self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(address=0x40|i) for i in range(PCA_MODULE_NUM))
         for i in range(PCA_MODULE_NUM):
+            print(i)
             try:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=0x40|i))
             except:
                 print("ERROR:{}".format(i))
-            for j in range(i * PCA_CHANNELS, i * (PCA_CHANNELS + 1) if ((i * (PCA_CHANNELS + 1)) < (rows * cols)) else (rows * cols)):
-                self.mEntryList[int(j / cols)].append(Entry(int(j / cols), j % cols, self.mPCA9685_Module[i], j % i))
+            for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS):
+                print("i:{},f:{}".format(i,j))
+                self.mEntryList[int(j / cols)].append(Entry(int(j / cols), j % cols, self.mPCA9685_Module[i], j % i if i != 0 else j))
     def __getitem__(self, index):
         return self.mEntryList[index]
-    def eInitialize(self):
+    def eInitialize(self, h = SERVO_MIN):
         for el in self.mEntryList:
             for e in el:
-                e.applyHeight(SERVO_MIN)
+                #print("row:{},col{}".format(e.row,e.col))
+                e.applyHeight(h)
                 e.syncActivate()
+    def setAllHeight(self, h = SERVO_MAX):
+        for el in self.mEntryList:
+            for e in el:
+                print("row:{},col{}".format(e.row,e.col))
+                e.applyHeight(h)
     def syncActivate(self, Act = True):
         for el in self.mEntryList:
             el.syncActivate(Act)
@@ -63,9 +71,12 @@ class Entry:
             self.module.set_pwm(self.channel, 0, self.height)
             time.sleep(0.05)
     def syncActivate(self, Act = True):
-        if(Act):
+        if(Act and self.syncThread == None):
             self.syncActive = True
             self.syncThread = threading.Thread(target=self.syncHeight, args=(self))
+        elif(Act and self.syncThread != None):
+            print('thread is already exist.')
+            return
         else:
             self.syncActive = False
             self.syncThread = None
