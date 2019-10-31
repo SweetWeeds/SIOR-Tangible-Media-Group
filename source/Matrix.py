@@ -12,8 +12,8 @@ PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
 ROWS = 8                # 행의 수
 COLS = 8                # 열의 수
-SERVO_MIN = 150         # Min pulse length out of 4096
-SERVO_MAX = 600         # Max pulse length out of 4096
+SERVO_MIN = 130         # Min pulse length out of 4096
+SERVO_MAX = 630         # Max pulse length out of 4096
 
 # 행렬 객체 (성분 핸들러)
 class Matrix:
@@ -38,8 +38,9 @@ class Matrix:
     def __getitem__(self, index):
         return self.mEntryList[index]
     def setAllHeight(self, h = SERVO_MAX):
-        for el in self.mEntryList:
+        for el in self.mEntryList: 
             for e in el:
+                print('[{}][{}] module:{} channel:{}'.format(e.row, e.col, e.module, e.channel))
                 e.height = h
     def syncActivate(self, Act = True):
         for el in self.mEntryList:
@@ -64,10 +65,11 @@ class Entry:
         self.channel = ch        # 모듈에서 할당 된 채널 넘버
         self.applyHeight(SERVO_MIN)
     def syncHeight(self):
-        print("[{}][{}] Motor Sync Thread Start (Module Name {})".format(self.row, self.col, self.module))
+        print("[{}][{}] Motor Sync Thread Start (Module Name {}, Channel {})".format(self.row, self.col, self.module, self.channel))
         while(self.syncActive):
             try:
                 self.module.set_pwm(self.channel, 0, self.height)
+                #print('[{}][{}] module:{} channel:{}'.format(self.row, self.col, self.module, self.channel))
             except:
                 print("[ERROR] syncHeight, channel:{}, height:{}".format(self.channel, self.height))
             time.sleep(0.01)
@@ -88,15 +90,15 @@ class Entry:
 
 if __name__ == "__main__":
     print("매트릭스 모듈 테스트 시작")
-    m = Matrix(4,8)
+    m = Matrix(8,4)
     m.syncActivate()
+    m.setAllHeight(SERVO_MIN)
     while(True):
         for i in range(SERVO_MIN,SERVO_MAX,10):
             print(i)
             m.setAllHeight(i)
-            time.sleep(0.5)
+            time.sleep(0.05)
         for i in range(SERVO_MAX,SERVO_MIN,-10):
             print(i)
             m.setAllHeight(i)
-            time.sleep(0.5)
-    
+            time.sleep(0.05)
