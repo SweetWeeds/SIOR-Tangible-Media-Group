@@ -22,32 +22,29 @@ class Matrix:
     def __init__(self, rows = ROWS, cols = COLS):
         self.mEntryList = list(list() for i in range(rows))
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
-        #self.mPCA9685_Module = list(Adafruit_PCA9685.PCA9685(address=0x40|i) for i in range(PCA_MODULE_NUM))
-        for i in range(PCA_MODULE_NUM):
-            print(i)
+        for i in range(int((rows * cols) / PCA_CHANNELS)):
             try:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=0x40|i))
+                self.mPCA9685_Module[-1].set_pwm_freq(60)   # set freq to 60hz
             except:
-                print("ERROR:{}".format(i))
+                print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(0x40|i))
             for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS):
-                print("i:{},f:{}".format(i,j))
-                self.mEntryList[int(j / cols)].append(Entry(int(j / cols), j % cols, self.mPCA9685_Module[i], j % i if i != 0 else j))
+                try:
+                    print("i:{},f:{}".format(i,j))
+                    print("Channel :{}".format(j % PCA_CHANNELS))
+                    self.mEntryList[int(j / cols)].append(Entry(int(j / cols), j % cols, self.mPCA9685_Module[i], j % PCA_CHANNELS))
+                except:
+                    print("ERROR: mEntryList의 {}번째 리스트를 인덱싱 할 수 없습니다.".format(int(j/cols)))
     def __getitem__(self, index):
         return self.mEntryList[index]
-    def eInitialize(self, h = SERVO_MIN):
-        for el in self.mEntryList:
-            for e in el:
-                #print("row:{},col{}".format(e.row,e.col))
-                e.applyHeight(h)
-                e.syncActivate()
     def setAllHeight(self, h = SERVO_MAX):
         for el in self.mEntryList:
             for e in el:
-                print("row:{},col{}".format(e.row,e.col))
-                e.applyHeight(h)
+                e.height = h
     def syncActivate(self, Act = True):
         for el in self.mEntryList:
-            el.syncActivate(Act)
+            for e in el:
+                e.syncActivate(Act)
 
 
 # 성분 객체
@@ -67,15 +64,20 @@ class Entry:
         self.channel = ch        # 모듈에서 할당 된 채널 넘버
         self.applyHeight(SERVO_MIN)
     def syncHeight(self):
+        print("[{}][{}] Motor Sync Thread Start (Module Name {})".format(self.row, self.col, self.module))
         while(self.syncActive):
-            self.module.set_pwm(self.channel, 0, self.height)
-            time.sleep(0.05)
+            try:
+                self.module.set_pwm(self.channel, 0, self.height)
+            except:
+                print("[ERROR] syncHeight, channel:{}, height:{}".format(self.channel, self.height))
+            time.sleep(0.01)
     def syncActivate(self, Act = True):
         if(Act and self.syncThread == None):
             self.syncActive = True
-            self.syncThread = threading.Thread(target=self.syncHeight, args=(self))
+            self.syncThread = threading.Thread(target=self.syncHeight)
+            self.syncThread.start()
         elif(Act and self.syncThread != None):
-            print('thread is already exist.')
+            print('[ERROR] thread is already exist.')
             return
         else:
             self.syncActive = False
@@ -83,13 +85,18 @@ class Entry:
     def applyHeight(self, h = -1):
         if h != -1:
             self.height = h
-        """
-        pulse_length = 1000000    # 1,000,000 us per second
-        pulse_length //= 60       # 60 Hz
-        # print('{0}us per period'.format(pulse_length))
-        pulse_length //= 4096     # 12 bits of resolution
-        # print('{0}us per bit'.format(pulse_length))
-        h *= 1000
-        h //= pulse_length
-        """
-        return self.module.set_pwm(self.channel, 0, h)  # set_pwm(채널, led_on pwm 신호, led_off pwm 신호)
+
+if __name__ == "__main__":
+    print("매트릭스 모듈 테스트 시작")
+    m = Matrix(4,8)
+    m.syncActivate()
+    while(True):
+        for i in range(SERVO_MIN,SERVO_MAX,10):
+            print(i)
+            m.setAllHeight(i)
+            time.sleep(0.5)
+        for i in range(SERVO_MAX,SERVO_MIN,-10):
+            print(i)
+            m.setAllHeight(i)
+            time.sleep(0.5)
+    
