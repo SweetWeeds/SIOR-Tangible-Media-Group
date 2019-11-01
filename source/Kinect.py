@@ -74,6 +74,7 @@ class Kinect:
             for col in range(len(self.depth[0])):
                 #print("row:{}, col:{}, indexing from {}:{}, {}:{}".format(row, col, row * ROW_DIV, (row + 1) * ROW_DIV,col * COL_DIV, (col + 1) * COL_DIV))
                 self.depth[row][col] = self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV, col * COL_DIV:(col + 1) * COL_DIV].mean() / 8
+                #self.depth[row][col] = self.depth[row][col].invert()
                 #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])
 
 if __name__ == "__main__":
