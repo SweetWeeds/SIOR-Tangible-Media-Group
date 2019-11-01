@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import threading
 from freenect import sync_get_depth as get_depth
+import time
 
 disp_size = (640, 480)
 ROWS = 8
@@ -15,15 +16,27 @@ class Kinect:
     depth = None
     temp_depth = None
     kinectThread = None
-    threadActive = False
-    kinectActive = False
+    threadActive = False    # is thread activated
+    kinectActive = False    # is kinect on
     def __init__(self):
         self.make_gamma()
         self.getDepth()
         self.kinectActive = True
+    def depthThread(self):
+        while self.threadActive:
+            print("Getting depth...")
+            self.getDepth()
+            print(self.depth)
+            time.sleep(0.1)
     def threadActivate(self, Act = True):
+        print("thread activate")
         if Act == True:
-            self.kinectThread = threading.Thread()
+            self.threadActive = True
+            self.kinectThread = threading.Thread(target = self.depthThread)
+            self.kinectThread.start()
+        else:
+            self.threadActive = False
+            self.kinectThread = None
     def make_gamma(self):
         """
         Create a gamma table
@@ -51,7 +64,6 @@ class Kinect:
                 a = np.array([0, 0, 255 - lb], dtype=np.uint8)
             else:
                 a = np.array([0, 0, 0], dtype=np.uint8)
-
             _gamma[i] = a
         self.gamma = _gamma
         return _gamma
@@ -70,3 +82,4 @@ if __name__ == "__main__":
     print(k.temp_depth)
     print("k.depth")
     print(k.depth)
+    k.threadActivate()
