@@ -6,6 +6,7 @@ from __future__ import division
 import time
 import Adafruit_PCA9685
 import threading
+import numpy as np
 
 #BUSNUM = 2
 PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
@@ -25,7 +26,7 @@ class Matrix:
         for i in range(int((rows * cols) / PCA_CHANNELS)):
             try:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=0x40|i))
-                self.mPCA9685_Module[-1].set_pwm_freq(60)   # set freq to 60hz
+                self.mPCA9685_Module[-1].set_pwm_freq(50)   # set freq to 60hz
             except:
                 print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(0x40|i))
             for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS):
@@ -37,11 +38,24 @@ class Matrix:
                     print("ERROR: mEntryList의 {}번째 리스트를 인덱싱 할 수 없습니다.".format(int(j/cols)))
     def __getitem__(self, index):
         return self.mEntryList[index]
+    """
     def setAllHeight(self, h = SERVO_MAX):
         for el in self.mEntryList: 
             for e in el:
                 print('[{}][{}] module:{} channel:{}'.format(e.row, e.col, e.module, e.channel))
                 e.height = h
+    """
+    def setHeight(self, arg1):
+        # if arg1's type is ndarray
+        if(type(arg1) == type(np.ndarray(1))):
+            for i in len(self.mEntryList):
+                for j in len(self.mEntryList[0]):
+                    self.mEntryList[i][j].applyHeight(arg1[i][j])
+        # if arg1's type is integer
+        elif(type(arg1) == type(int())):
+            for el in self.mEntryList: 
+                for e in el:
+                    e.height = arg1
     def syncActivate(self, Act = True):
         for el in self.mEntryList:
             for e in el:
@@ -72,7 +86,7 @@ class Entry:
                 #print('[{}][{}] module:{} channel:{}'.format(self.row, self.col, self.module, self.channel))
             except:
                 print("[ERROR] syncHeight, channel:{}, height:{}".format(self.channel, self.height))
-            time.sleep(0.01)
+            time.sleep(0.05)
     def syncActivate(self, Act = True):
         if(Act and self.syncThread == None):
             self.syncActive = True
@@ -92,13 +106,13 @@ if __name__ == "__main__":
     print("매트릭스 모듈 테스트 시작")
     m = Matrix(8,4)
     m.syncActivate()
-    m.setAllHeight(SERVO_MIN)
+    m.setHeight(SERVO_MIN)
     while(True):
         for i in range(SERVO_MIN,SERVO_MAX,10):
             print(i)
-            m.setAllHeight(i)
+            m.setHeight(i)
             time.sleep(0.05)
         for i in range(SERVO_MAX,SERVO_MIN,-10):
             print(i)
-            m.setAllHeight(i)
+            m.setHeight(i)
             time.sleep(0.05)
