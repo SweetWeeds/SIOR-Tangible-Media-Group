@@ -3,7 +3,7 @@ import wave
 import alsaaudio as aa
 from struct import unpack
 import numpy as np
-import scrollphat
+#import scrollphat
 
 wavfile = wave.open(sys.argv[1], 'r')
 
@@ -21,7 +21,7 @@ matrix    = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 power     = []
 weighting = [1, 1, 2, 4, 8, 8, 8, 8, 16, 16, 16]
 
-scrollphat.set_brightness(5)
+#scrollphat.set_brightness(5)
 def power_index(val):
     return int(2 * chunk * val / sample_rate)
 
@@ -57,5 +57,7 @@ data = wavfile.readframes(chunk)
 while data != '':
     output.write(data)
     matrix = compute_fft(data, chunk, sample_rate)
-    scrollphat.graph(matrix, 0, 5)
+#    scrollphat.graph(matrix, 0, 5)
     data = wavfile.readframes(chunk)
+    print(matrix)
+    print(data)
