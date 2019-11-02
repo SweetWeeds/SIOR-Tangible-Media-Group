@@ -11,6 +11,9 @@ sample_rate = wavfile.getframerate()
 no_channels = wavfile.getnchannels()
 chunk = 4096
 
+print(sample_rate)
+print(no_channels)
+
 output = aa.PCM(aa.PCM_PLAYBACK, aa.PCM_NORMAL)
 output.setchannels(no_channels)
 output.setrate(sample_rate)
@@ -60,4 +63,4 @@ while data != '':
 #    scrollphat.graph(matrix, 0, 5)
     data = wavfile.readframes(chunk)
     print(matrix)
-    print(data)
+    print(type(data))
