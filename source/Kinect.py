@@ -18,7 +18,9 @@ class Kinect:
     kinectThread = None
     threadActive = False    # is thread activated
     kinectActive = False    # is kinect on
-    def __init__(self):
+    def __init__(self, rows=ROWS, cols=COLS):
+        self.rows = rows
+        self.cols = cols
         self.make_gamma()
         self.getDepth()
         self.kinectActive = True
@@ -68,7 +70,7 @@ class Kinect:
         self.gamma = _gamma
         return _gamma
     def getDepth(self):
-        self.depth = np.zeros((10,10),dtype=np.uint8)
+        self.depth = np.zeros((ROWS,COLS),dtype=np.uint8)
         self.temp_depth = np.rot90(get_depth()[0])
         for row in range(len(self.depth)):
             for col in range(len(self.depth[0])):
