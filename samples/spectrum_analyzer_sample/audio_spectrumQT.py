@@ -9,6 +9,7 @@ from scipy.fftpack import fft
 import sys
 import time
 
+import threading
 
 class AudioStream(object):
     def __init__(self):
@@ -98,8 +99,16 @@ class AudioStream(object):
         timer.start(20)
         self.start()
 
+    def printData(self):
+        while(True):
+            print("Print data x")
+            print(self.x)
+            print("Print data f")
+            print(self.f)
+            time.sleep(0.05)
 
 if __name__ == '__main__':
-
     audio_app = AudioStream()
     audio_app.animation()
+    t = threading.Thread(target=audio.app.printData)
+    t.start()

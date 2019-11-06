@@ -4,15 +4,18 @@ import threading
 import time
 
 ROWS = 8
-COLS = 8
+COLS = 1
 
 def mainThread(k,m):
     while(True):
+        k.getDepth()
+        print(k.depth)
         m.setHeight(k.depth)
-        time.sleep(0.5)
+        time.sleep(0.005)
 
 if __name__=="__main__":
     k = Kinect()
     m = Matrix(ROWS, COLS)
+    m.syncActivate()
     t = threading.Thread(target = mainThread, args=(k,m))
     t.start()
