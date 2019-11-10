@@ -29,8 +29,10 @@ class Kinect:
             print(self.depth)
             time.sleep(0.005)
     def threadActivate(self, Act = True):
-        print("thread activate")
-        if Act == True:
+        if threadActive == True and Act == True:
+            return
+        elif threadActive == False and Act == True:
+            print("Kinect thread activate")
             self.threadActive = True
             self.kinectThread = threading.Thread(target = self.depthThread)
             self.kinectThread.start()
