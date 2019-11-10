@@ -86,11 +86,13 @@ class AudioStream(object):
         wf_data = self.stream.read(self.CHUNK)
         wf_data = struct.unpack(str(2 * self.CHUNK) + 'B', wf_data)
         wf_data = np.array(wf_data, dtype='b')[::2] + 128
+        #print(wf_data)
         self.set_plotdata(name='waveform', data_x=self.x, data_y=wf_data,)
 
         sp_data = fft(np.array(wf_data, dtype='int8') - 128)
         sp_data = np.abs(sp_data[0:int(self.CHUNK / 2)]
                          ) * 2 / (128 * self.CHUNK)
+        #print(sp_data)
         self.set_plotdata(name='spectrum', data_x=self.f, data_y=sp_data)
 
     def animation(self):
@@ -109,6 +111,6 @@ class AudioStream(object):
 
 if __name__ == '__main__':
     audio_app = AudioStream()
-    audio_app.animation()
-    t = threading.Thread(target=audio.app.printData)
+    t = threading.Thread(target=audio_app.printData)
     t.start()
+    audio_app.animation()
