@@ -3,7 +3,7 @@ from Kinect import *
 import threading
 import time
 
-ROWS = 8
+ROWS = 10
 COLS = 1
 
 def mainThread(k,m):

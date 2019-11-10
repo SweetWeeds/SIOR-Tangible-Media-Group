@@ -5,8 +5,8 @@ from freenect import sync_get_depth as get_depth
 import time
 
 disp_size = (640, 480)
-ROWS = 8
-COLS = 8
+ROWS = 10
+COLS = 10
 
 ROW_DIV = disp_size[0] / ROWS
 COL_DIV = disp_size[1] / COLS
@@ -26,7 +26,7 @@ class Kinect:
         while self.threadActive:
             print("Getting depth...")
             self.getDepth()
-            #print(self.depth)
+            print(self.depth)
             time.sleep(0.005)
     def threadActivate(self, Act = True):
         print("thread activate")
@@ -68,12 +68,13 @@ class Kinect:
         self.gamma = _gamma
         return _gamma
     def getDepth(self):
-        self.depth = np.zeros((8,8),dtype=np.uint8)
+        self.depth = np.zeros((ROWS,COLS),dtype=np.uint8)
         self.temp_depth = np.rot90(get_depth()[0])
         for row in range(len(self.depth)):
             for col in range(len(self.depth[0])):
                 #print("row:{}, col:{}, indexing from {}:{}, {}:{}".format(row, col, int(row * ROW_DIV), int((row + 1) * ROW_DIV), int(col * COL_DIV), int((col + 1) * COL_DIV)))
                 self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].mean() / 8
+                self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
                 #print(self.depth[row][col])
                 #self.depth[row][col] = self.depth[row][col].invert()
                 #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])
