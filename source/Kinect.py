@@ -31,8 +31,10 @@ class Kinect:
             print(self.depth)
             time.sleep(0.005)
     def threadActivate(self, Act = True):
-        print("thread activate")
-        if Act == True:
+        if threadActive == True and Act == True:
+            return
+        elif threadActive == False and Act == True:
+            print("Kinect thread activate")
             self.threadActive = True
             self.kinectThread = threading.Thread(target = self.depthThread)
             self.kinectThread.start()
@@ -75,7 +77,8 @@ class Kinect:
         for row in range(len(self.depth)):
             for col in range(len(self.depth[0])):
                 #print("row:{}, col:{}, indexing from {}:{}, {}:{}".format(row, col, int(row * ROW_DIV), int((row + 1) * ROW_DIV), int(col * COL_DIV), int((col + 1) * COL_DIV)))
-                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].mean()
+                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].mean() / 8
+                self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
                 #print(self.depth[row][col])
                 #self.depth[row][col] = self.depth[row][col].invert()
                 #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])

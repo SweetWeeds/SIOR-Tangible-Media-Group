@@ -11,8 +11,8 @@ import numpy as np
 #BUSNUM = 2
 PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
-ROWS = 8                # 행의 수
-COLS = 8                # 열의 수
+ROWS = 10                # 행의 수
+COLS = 10                # 열의 수
 SERVO_MIN = 150         # 가장 높은 높이
 SERVO_MAX = 600         # 가장 낮은 높이
 
@@ -47,7 +47,7 @@ class Matrix:
                 e.height = h
     """
     def setKinectHeight(self, arg1):
-        arg1 = arg1 * (SERVO_MAX - SERVO_MIN) / arg1.min() + SERVO_MIN
+        arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / 255 + SERVO_MIN)
         self.setHeight(arg1)
     def setHeight(self, arg1):
         # if arg1's type is ndarray
@@ -103,7 +103,7 @@ class Entry:
             self.syncActive = False
             self.syncThread = None
     def applyHeight(self, h = -1):
-        if h != -1:
+        if h != -1 and h != np.nan:
             self.height = int(h)
 
 if __name__ == "__main__":

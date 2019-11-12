@@ -3,14 +3,14 @@ from Kinect import *
 import threading
 import time
 
-ROWS = 8
+ROWS = 10
 COLS = 1
 
 def mainThread(k,m):
     while(True):
         k.getDepth()
         print(k.depth)
-        m.setHeight(k.depth)
+        m.setKinectHeight(k.depth)
         time.sleep(0.005)
 
 if __name__=="__main__":
