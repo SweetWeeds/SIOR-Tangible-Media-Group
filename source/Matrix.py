@@ -13,8 +13,9 @@ PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
 ROWS = 10                # 행의 수
 COLS = 10                # 열의 수
-SERVO_MIN = 150         # 가장 높은 높이
-SERVO_MAX = 600         # 가장 낮은 높이
+SERVO_MIN = 170         # 가장 높은 높이
+SERVO_MAX = 580         # 가장 낮은 높이
+ADDR_START = 0x40
 
 # 행렬 객체 (성분 핸들러)
 class Matrix:
@@ -23,16 +24,18 @@ class Matrix:
     def __init__(self, rows = ROWS, cols = COLS):
         self.mEntryList = list(list() for i in range(rows))
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
-        module_num = int((rows * cols) / PCA_CHANNELS) if (rows * cols) > PCA_CHANNELS else 1
-        for i in range(module_num):
+        module_num = int((rows * cols) / PCA_CHANNELS) + 1
+        print(module_num)
+        for i in range(3):
+            print(i)
             try:
-                self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=0x40|i))
+                self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=ADDR_START|i))
                 self.mPCA9685_Module[-1].set_pwm_freq(50)   # set freq to 60hz
             except:
-                print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(0x40|i))
+                print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(ADDR_START|i))
             for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS):
                 try:
-                    print("Address:{}, i:{},f:{}".format(0x40|i, i,j))
+                    print("Address:{}, i:{},f:{}".format(hex(ADDR_START|i), i,j))
                     print("Channel :{}".format(j % PCA_CHANNELS))
                     self.mEntryList[int(j / cols)].append(Entry(int(j / cols), j % cols, self.mPCA9685_Module[i], j % PCA_CHANNELS))
                 except:
@@ -54,7 +57,10 @@ class Matrix:
         if(type(arg1) == type(np.ndarray(1))):
             for i in range(len(self.mEntryList)):
                 for j in range(len(self.mEntryList[0])):
-                    self.mEntryList[i][j].applyHeight(arg1[i][j])
+                    try:
+                        self.mEntryList[i][j].applyHeight(arg1[i][j])
+                    except:
+                        print("[ERROR] {},{}번째 모듈을 제어할 수 없습니다.".format(i,j))
         # if arg1's type is integer
         elif(type(arg1) == type(int())):
             for el in self.mEntryList: 
@@ -89,7 +95,7 @@ class Entry:
                 self.module.set_pwm(self.channel, 0, self.height)
                 #print('[{}][{}] module:{} channel:{}'.format(self.row, self.col, self.module, self.channel))
             except:
-                print("[ERROR] syncHeight, channel:{}, height:{}".format(self.channel, self.height))
+                print("[ERROR] syncHeight, module: {}, channel:{}, height:{}".format(self.module, self.channel, self.height))
             time.sleep(0.005)
     def syncActivate(self, Act = True):
         if(Act and self.syncThread == None):
@@ -108,7 +114,7 @@ class Entry:
 
 if __name__ == "__main__":
     print("매트릭스 모듈 테스트 시작")
-    m = Matrix(1,8)
+    m = Matrix(3,10)
     m.syncActivate()
     m.setHeight(SERVO_MIN)
     while(True):
