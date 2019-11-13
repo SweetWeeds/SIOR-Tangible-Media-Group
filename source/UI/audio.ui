@@ -22,6 +22,9 @@
     <height>320</height>
    </size>
   </property>
+  <property name="cursor">
+   <cursorShape>CrossCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -41,41 +44,36 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QChartView" name="graphicsView">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>60</y>
-     <width>441</width>
-     <height>191</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="backButton">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>260</y>
+     <y>110</y>
      <width>441</width>
-     <height>51</height>
+     <height>201</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>40</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Back</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="disconnectButton">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>10</y>
      <width>441</width>
-     <height>41</height>
+     <height>71</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>16</pointsize>
+     <pointsize>23</pointsize>
     </font>
    </property>
    <property name="text">
@@ -83,13 +81,6 @@
    </property>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header>QtCharts</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

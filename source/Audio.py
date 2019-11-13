@@ -1,6 +1,7 @@
 import pyaudio
 import numpy as np
 import threading
+import time
 
 CHUNK = 2**11
 RATE = 44100
@@ -16,28 +17,39 @@ class AudioSpectrum:
     plot2D = [0] * int(np.sqrt((ROWS / 2) ** 2 + (COLS / 2) ** 2))
     plot3D = np.zeros((ROWS,COLS),dtype=np.uint8)
     threadActive = False
+    audioThread = None
     def __init__(self):
         self.p=pyaudio.PyAudio()
         self.stream=self.p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
               frames_per_buffer=CHUNK)
+        self.audioThread = threading.Thread(target = self.audioThread)
+        self.audioThread.start()
     def audioThread(self):
         print("오디오 스레드 시작")
-        while(self.threadActive):
-            print(self.plot3D)
-            print("스레드 여부:{}".format(self.threadActive))
-            self.update3D()
+        while(True):
+            if self.threadActive == True:
+                #print(self.plot3D)
+                #print("스레드 여부:{}".format(self.threadActive))
+                self.update3D()
+            else:
+                print("오디오 스레드 아이들")
+                time.sleep(3)
+        print("오디오 스레드 종료")
     def getDepth(self):
         return self.plot3D
     def threadActivate(self, Act = True):
         if self.threadActive == True and Act == True:
             return
         elif self.threadActive == False and Act == True:
+            #print("오디오 스레드 생성")
             self.threadActive = True
-            self.audioThread = threading.Thread(target = self.audioThread)
-            self.audioThread.start()
+            #self.audioThread = threading.Thread(target = self.audioThread)
+            #self.audioThread.start()
         else:
             self.threadActive = False
-            self.audioThread = None
+            #self.audioThread.do_run = False
+            #self.audioThread = None
+        print("{} {}".format(self.threadActive, self.audioThread))
     def update(self):
         try:
             data = np.fromstring(self.stream.read(CHUNK),dtype=np.int16)

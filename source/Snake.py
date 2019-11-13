@@ -10,7 +10,7 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
-class Game:
+class Snake:
     def __init__(self, fps = 2, cell_size = 10):
     
         self.fps = fps
@@ -110,6 +110,6 @@ class Game:
         return keyUpEvents[0].key
 
 if __name__ == '__main__':
-    wormy = Game()
+    wormy = Snake()
     wormy.start()
     wormy.terminate()

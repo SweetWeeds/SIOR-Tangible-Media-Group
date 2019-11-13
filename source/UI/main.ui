@@ -28,6 +28,9 @@
     <height>320</height>
    </size>
   </property>
+  <property name="cursor">
+   <cursorShape>CrossCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
@@ -63,6 +66,9 @@ Speaker</string>
     <font>
      <pointsize>20</pointsize>
     </font>
+   </property>
+   <property name="locale">
+    <locale language="Korean" country="SouthKorea"/>
    </property>
    <property name="text">
     <string>3D Depth
