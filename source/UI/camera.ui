@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>CamDlg</class>
+ <widget class="QDialog" name="CamDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -9,6 +9,12 @@
     <width>480</width>
     <height>320</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
@@ -23,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Camera</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
@@ -41,56 +47,26 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QChartView" name="graphicsView">
+  <widget class="QPushButton" name="mainMenuButton">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>60</y>
+     <y>20</y>
      <width>441</width>
-     <height>191</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>260</y>
-     <width>441</width>
-     <height>51</height>
+     <height>271</height>
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>441</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Bluetooth Pairing DIsconnect</string>
+    <string>Main Menu</string>
    </property>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QChartView</class>
-   <extends>QGraphicsView</extends>
-   <header>QtCharts</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>CamDlg</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -106,7 +82,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>CamDlg</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

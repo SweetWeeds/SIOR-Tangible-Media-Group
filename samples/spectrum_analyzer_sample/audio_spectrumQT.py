@@ -88,7 +88,7 @@ class AudioStream(object):
         wf_data = np.array(wf_data, dtype='b')[::2] + 128
         #print(wf_data)
         self.set_plotdata(name='waveform', data_x=self.x, data_y=wf_data,)
-
+        # FFT 실행
         sp_data = fft(np.array(wf_data, dtype='int8') - 128)
         sp_data = np.abs(sp_data[0:int(self.CHUNK / 2)]
                          ) * 2 / (128 * self.CHUNK)
