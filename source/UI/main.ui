@@ -31,7 +31,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QPushButton" name="BTButton">
+  <widget class="QPushButton" name="BluetoothButton">
    <property name="geometry">
     <rect>
      <x>30</x>

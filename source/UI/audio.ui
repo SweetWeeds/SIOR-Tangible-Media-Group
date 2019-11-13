@@ -51,7 +51,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="backButton">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -61,7 +61,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PushButton</string>
+    <string>Back</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_2">
@@ -72,6 +72,11 @@
      <width>441</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>Bluetooth Pairing DIsconnect</string>
