@@ -25,11 +25,16 @@ class Kinect:
         self.getDepth()
         self.kinectActive = True
     def depthThread(self):
-        while self.threadActive:
-            print("Getting depth...")
-            self.getDepth()
-            print(self.depth)
-            time.sleep(0.005)
+        print("키넥트 스레드 시작")
+        while True:
+            if self.threadActive:
+                #print("Getting depth...")
+                self.getDepth()
+                #print(self.depth)
+                time.sleep(0.0025)
+            else:
+                print("키넥트 스레드 비활성화")
+        print("키넥트 스레드 종료")
     def threadActivate(self, Act = True):
         if threadActive == True and Act == True:
             return
