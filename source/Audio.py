@@ -15,7 +15,7 @@ class AudioSpectrum:
     p = None
     stream = None
     plot2D = [0] * int(np.sqrt((ROWS / 2) ** 2 + (COLS / 2) ** 2))
-    plot3D = np.zeros((ROWS,COLS),dtype=np.uint8)
+    depth = np.zeros((ROWS,COLS),dtype=np.uint8)
     threadActive = False
     audioThread = None
     def __init__(self):
@@ -28,15 +28,15 @@ class AudioSpectrum:
         print("오디오 스레드 시작")
         while(True):
             if self.threadActive == True:
-                #print(self.plot3D)
+                print(self.depth)
                 #print("스레드 여부:{}".format(self.threadActive))
                 self.update3D()
             else:
-                print("오디오 스레드 아이들")
+                #print("오디오 스레드 아이들")
                 time.sleep(3)
         print("오디오 스레드 종료")
     def getDepth(self):
-        return self.plot3D
+        return self.depth
     def threadActivate(self, Act = True):
         if self.threadActive == True and Act == True:
             return
@@ -67,10 +67,10 @@ class AudioSpectrum:
             for j in range(height):
                 idx = int(np.sqrt((i ** 2) + (j ** 2)))
                 try:
-                    self.plot3D[width + i][height + j] = self.plot2D[idx]
-                    self.plot3D[width + i][height -1 - j] = self.plot2D[idx]
-                    self.plot3D[width -1 - i][height + j] = self.plot2D[idx]
-                    self.plot3D[width -1 - i][height -1 - j] = self.plot2D[idx]        
+                    self.depth[width + i][height + j] = self.plot2D[idx]
+                    self.depth[width + i][height -1 - j] = self.plot2D[idx]
+                    self.depth[width -1 - i][height + j] = self.plot2D[idx]
+                    self.depth[width -1 - i][height -1 - j] = self.plot2D[idx]        
                 except:
                     print("{},{}".format(i,j))
     def Close(self):
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     while(True):
         #os.system('clear')
         a.update3D()
-        print(a.plot3D)
+        print(a.depth)
     a.Close()
