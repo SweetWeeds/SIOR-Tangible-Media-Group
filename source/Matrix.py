@@ -26,14 +26,14 @@ class Matrix:
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
         module_num = int((rows * cols) / PCA_CHANNELS) + 1
         print(module_num)
-        for i in range(3):
+        for i in range(module_num):
             print(i)
             try:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=ADDR_START|i))
                 self.mPCA9685_Module[-1].set_pwm_freq(50)   # set freq to 60hz
             except:
                 print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(ADDR_START|i))
-            for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS):
+            for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS if (((i + 1) * PCA_CHANNELS) < ROWS * COLS) else ROWS * COLS):
                 try:
                     print("Address:{}, i:{},f:{}".format(hex(ADDR_START|i), i,j))
                     print("Channel :{}".format(j % PCA_CHANNELS))
@@ -114,7 +114,7 @@ class Entry:
 
 if __name__ == "__main__":
     print("매트릭스 모듈 테스트 시작")
-    m = Matrix(3,10)
+    m = Matrix(9,7)
     m.syncActivate()
     m.setHeight(SERVO_MIN)
     while(True):
