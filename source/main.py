@@ -40,16 +40,24 @@ class mainWindow(QMainWindow, main_form_class):
         self.k.threadActivate()
         self.s = Snake()
         self.mode = 0
-    def BluetoothClicked(self):
-        self.a.threadActivate(True)
-        dlg = audioDialog()
-        if dlg.exec_():
-            self.a.threadActivate(False)
     def KinectClicked(self):
-        #self.k.threadActvate(True)  # 키넥트 스레드 시작
+        self.mode = 1
+        self.k.threadActivate(True)  # 키넥트 스레드 시작
         dlg = kinectDialog()
         dlg.exec_()
+        if dlg.isBackClicked == True:
+            self.mode = 0
+            self.k.threadActivate(False)
+    def BluetoothClicked(self):
+        self.mode = 2
+        self.a.threadActivate(True)
+        dlg = audioDialog()
+        dlg.exec_()
+        if dlg.isBackClicked == True:
+            self.mode = 0
+            self.a.threadActivate(False)
     def SnakeClicked(self):
+        self.mode = 3
         dlg = snakeDialog()
         dlg.exec_()
     def moduleSyncThread(self):
@@ -70,6 +78,7 @@ class mainWindow(QMainWindow, main_form_class):
                 sleep(1)
                 continue
 class kinectDialog(QDialog, kinect_form_class):
+    isBackClicked = False
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -77,9 +86,11 @@ class kinectDialog(QDialog, kinect_form_class):
         self.showFullScreen()
         self.backButton.clicked.connect(self.backClicked)
     def backClicked(self):
+        self.isBackClicked = True
         self.close()
 
 class audioDialog(QDialog, audio_form_class):
+    isBackClicked = False
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -89,12 +100,14 @@ class audioDialog(QDialog, audio_form_class):
         self.backButton.clicked.connect(self.backClicked)
         self.disconnectButton.clicked.connect(self.disconnectClicked)
     def backClicked(self):
+        self.isBackClicked = True
         self.a.threadActivate(False)    # 오디오 스레드 비활성화
         self.close()
     def disconnectClicked(self):
         os.system("bluetoothctl disconnect")
 
 class snakeDialog(QDialog, snake_form_class):
+    isBackClicked = False
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -102,6 +115,7 @@ class snakeDialog(QDialog, snake_form_class):
         self.showFullScreen()
         self.backButton.clicked.connect(self.backClicked)
     def backClicked(self):
+        self.isBackClicked = True
         self.close()
 
 if __name__ == "__main__":

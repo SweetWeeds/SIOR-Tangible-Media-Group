@@ -23,7 +23,7 @@ class Kinect:
         self.cols = cols
         self.make_gamma()
         self.getDepth()
-        self.kinectActive = True
+        self.kinectActive = False
     def depthThread(self):
         print("키넥트 스레드 시작")
         while True:
