@@ -24,14 +24,16 @@ class Kinect:
         self.make_gamma()
         self.getDepth()
         self.kinectActive = False
+        self.kinectThread = threading.Thread(target=self.depthThread)
+        self.kinectThread.start()
     def depthThread(self):
         print("키넥트 스레드 시작")
         while True:
             if self.threadActive:
-                #print("Getting depth...")
+                print("Getting depth...")
                 self.getDepth()
                 #print(self.depth)
-                time.sleep(0.0001)
+                time.sleep(1.0001)
             else:
                 #print("키넥트 스레드 비활성화")
                 time.sleep(3)
@@ -40,10 +42,8 @@ class Kinect:
         if self.threadActive == True and Act == True:
             return
         elif self.threadActive == False and Act == True:
-            print("Kinect thread activate")
+            print("키넥트 스레드 활성화")
             self.threadActive = True
-            #self.kinectThread = threading.Thread(target = self.depthThread)
-            #self.kinectThread.start()
         else:
             self.threadActive = False
             #self.kinectThread = None

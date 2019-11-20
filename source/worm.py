@@ -1,5 +1,4 @@
-import random, pygame
-from pygame.locals import *
+import random
 
 from gold import Gold
 
@@ -61,8 +60,15 @@ class Worm:
         if self.direction != UP:
             self.direction = DOWN
 
-    def move_to_direction(self):
-        self.coordinate.insert(1, {'x': self.coordinate[HEAD]['x'], 'y': self.coordinate[HEAD]['y']})
+    def move_to_direction(self, add):
+        if not add:
+            for i in range(1, len(self.coordinate)):
+                bodyNow = self.coordinate[len(self.coordinate) - i]
+                bodyBack = self.coordinate[len(self.coordinate) - (i + 1)]
+                bodyNow['x'] = bodyBack['x']
+                bodyNow['y'] = bodyBack['y']
+        else:
+            self.coordinate.insert(1, {'x': self.coordinate[HEAD]['x'], 'y': self.coordinate[HEAD]['y']})
 
         if self.direction == LEFT:
             self.coordinate[HEAD]['x'] -= 1
