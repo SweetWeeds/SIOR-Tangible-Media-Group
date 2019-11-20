@@ -63,14 +63,14 @@ class AudioSpectrum:
         self.update()
         width = int(ROWS / 2)
         height = int(COLS / 2)
-        for i in range(width):
-            for j in range(height):
+        for i in range(width + 1):
+            for j in range(height + 1):
                 idx = int(np.sqrt((i ** 2) + (j ** 2)))
                 try:
                     self.depth[width + i][height + j] = self.plot2D[idx]
-                    self.depth[width + i][height -1 - j] = self.plot2D[idx]
-                    self.depth[width -1 - i][height + j] = self.plot2D[idx]
-                    self.depth[width -1 - i][height -1 - j] = self.plot2D[idx]        
+                    self.depth[width + i][height - j] = self.plot2D[idx]
+                    self.depth[width - i][height + j] = self.plot2D[idx]
+                    self.depth[width - i][height - j] = self.plot2D[idx]
                 except:
                     print("{},{}".format(i,j))
     def Close(self):

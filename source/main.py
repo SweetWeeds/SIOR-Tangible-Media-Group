@@ -71,7 +71,7 @@ class mainWindow(QMainWindow, main_form_class):
             # 1. 키넥트
             if(self.mMode == 1):
                 #self.k.getDepth()
-                #print(self.k.depth)
+                print(self.k.depth)
                 #print('키넥트')
                 self.m.setKinectHeight(self.k.depth)
                 time.sleep(0.0001)

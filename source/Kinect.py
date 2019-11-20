@@ -3,6 +3,8 @@ import sys
 import threading
 from freenect import sync_get_depth as get_depth
 import time
+import queue
+from functools import reduce
 
 disp_size = (640, 480)
 ROWS = 9
@@ -13,11 +15,15 @@ COL_DIV = disp_size[1] / COLS
 
 class Kinect:
     gamma = None
-    depth = None
+    depth = np.zeros((ROWS, COLS), dtype=np.uint8)
     temp_depth = None
     kinectThread = None
     threadActive = False    # is thread activated
     kinectActive = False    # is kinect on
+
+    matrixIdx = 0
+    matrixQueue = [0, 0, 0, 0, 0]
+
     def __init__(self, rows=ROWS, cols=COLS):
         self.rows = rows
         self.cols = cols
@@ -75,13 +81,13 @@ class Kinect:
         self.gamma = _gamma
         return _gamma
     def getDepth(self):
-        self.depth = np.zeros((ROWS,COLS),dtype=np.uint8)
+        #self.depth = np.zeros((ROWS,COLS),dtype=np.uint8)
         self.temp_depth = np.rot90(get_depth()[0])
         for row in range(len(self.depth)):
             for col in range(len(self.depth[0])):
                 #print("row:{}, col:{}, indexing from {}:{}, {}:{}".format(row, col, int(row * ROW_DIV), int((row + 1) * ROW_DIV), int(col * COL_DIV), int((col + 1) * COL_DIV)))
-                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].max()
-                #self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
+                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].mean() / 8
+                self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
         
         self.depth[(self.depth >= 0) & (self.depth < 32)] = 0
         self.depth[(self.depth >= 32) & (self.depth < 56)] = 32
@@ -106,6 +112,12 @@ class Kinect:
         #self.depth[row][col] = self.depth[row][col].invert()
         #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])
 
+        
+
+
+
+
+
 if __name__ == "__main__":
     k = Kinect()
     print("k.temp_depth")
@@ -113,3 +125,7 @@ if __name__ == "__main__":
     print("k.depth")
     print(k.depth)
     k.threadActivate()
+    while(True):
+        print("뎁스")
+        print(k.depth)
+        time.sleep(0.5)

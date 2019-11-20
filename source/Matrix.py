@@ -31,7 +31,8 @@ class Matrix:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=ADDR_START|i))
                 self.mPCA9685_Module[-1].set_pwm_freq(50)   # set freq to 60hz
             except:
-                print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(ADDR_START|i))
+                #print("ERROR:{}번째 모듈을 할당 할 수 없습니다.".format(ADDR_START|i))
+                pass
             for j in range(i * PCA_CHANNELS, (i + 1) * PCA_CHANNELS if (((i + 1) * PCA_CHANNELS) < ROWS * COLS) else ROWS * COLS):
                 try:
                     print("Address:{}, i:{},f:{}".format(hex(ADDR_START|i), i,j))
@@ -54,7 +55,8 @@ class Matrix:
         minHeight = np.min(arg1)
         maxHeight = np.max(arg1)
 
-        arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / (maxHeight - minHeight if (maxHeight - minHeight != 0) else 1) + SERVO_MIN)
+        #arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / (maxHeight - minHeight if (maxHeight - minHeight != 0) else 1) + SERVO_MIN)
+        arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / 255 + SERVO_MIN)
         self.setHeight(arg1)
         #print(arg1)
     def setHeight(self, arg1):
@@ -65,7 +67,8 @@ class Matrix:
                     try:
                         self.mEntryList[i][j].applyHeight(arg1[i][j])
                     except:
-                        print("[ERROR] {},{}번째 모듈을 제어할 수 없습니다.".format(i,j))
+                        #print("[ERROR] {},{}번째 모듈을 제어할 수 없습니다.".format(i,j))
+                        pass
         # if arg1's type is integer
         elif(type(arg1) == type(int())):
             for el in self.mEntryList: 
