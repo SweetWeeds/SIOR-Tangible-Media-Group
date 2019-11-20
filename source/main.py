@@ -46,6 +46,7 @@ class mainWindow(QMainWindow, main_form_class):
         dlg = kinectDialog()
         dlg.exec_()
         if dlg.isBackClicked == True:
+            print("종료")
             self.mode = 0
             self.k.threadActivate(False)
     def BluetoothClicked(self):

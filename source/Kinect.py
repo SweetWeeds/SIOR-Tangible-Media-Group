@@ -30,7 +30,7 @@ class Kinect:
             if self.threadActive:
                 #print("Getting depth...")
                 self.getDepth()
-                print(self.depth)
+                #print(self.depth)
                 time.sleep(0.0001)
             else:
                 #print("키넥트 스레드 비활성화")
