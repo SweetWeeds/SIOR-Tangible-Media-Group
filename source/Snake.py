@@ -13,7 +13,7 @@ class Snake:
     def __init__(self, cell_size = 9):
     
         self.cell_size = cell_size
-        self.map = np.zeros((cell_size, cell_size), np.uint8)
+        self.map = np.full((cell_size, cell_size), 500, np.uint8)
         self.worm = Worm(self.cell_size)
         self.gold = Gold(self.cell_size)
 
@@ -22,11 +22,10 @@ class Snake:
             self.gold.set_position(self.get_empty_position())
 
     def draw_matrix(self):
-        self.map = np.zeros((self.cell_size, self.cell_size), np.uint8)
+        self.map = np.full((self.cell_size, self.cell_size),500, np.uint8)
         for wormBody in self.worm.coordinate:
-            self.map[wormBody['y']][wormBody['x']] = 255 // 2
-        self.map[self.gold.y][self.gold.x] = 255
-        print(self.map)
+            self.map[wormBody['y']][wormBody['x']] = 100
+        self.map[self.gold.y][self.gold.x] = 100
 
     def check_overlapped_object(self):
         #check gold

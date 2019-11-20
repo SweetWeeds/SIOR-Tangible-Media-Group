@@ -6,8 +6,8 @@ import time
 CHUNK = 2**11
 RATE = 44100
 
-ROWS = 10
-COLS = 10
+ROWS = 9
+COLS = 9
 
 MAX = 50 * 17000 / 2 ** 16
 

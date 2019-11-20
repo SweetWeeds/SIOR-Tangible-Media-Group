@@ -5,8 +5,8 @@ from freenect import sync_get_depth as get_depth
 import time
 
 disp_size = (640, 480)
-ROWS = 10
-COLS = 10
+ROWS = 9
+COLS = 9
 
 ROW_DIV = disp_size[0] / ROWS
 COL_DIV = disp_size[1] / COLS
@@ -23,25 +23,22 @@ class Kinect:
         self.cols = cols
         self.make_gamma()
         self.getDepth()
-        self.kinectActive = False
         self.kinectThread = threading.Thread(target=self.depthThread)
         self.kinectThread.start()
     def depthThread(self):
         print("키넥트 스레드 시작")
         while True:
             if self.threadActive:
-                print("Getting depth...")
+                #print("Getting depth...")
                 self.getDepth()
                 #print(self.depth)
-                time.sleep(1.0001)
+                time.sleep(0.0001)
             else:
-                #print("키넥트 스레드 비활성화")
+                print("키넥트 스레드 비활성화")
                 time.sleep(3)
         print("키넥트 스레드 종료")
     def threadActivate(self, Act = True):
-        if self.threadActive == True and Act == True:
-            return
-        elif self.threadActive == False and Act == True:
+        if Act == True:
             print("키넥트 스레드 활성화")
             self.threadActive = True
         else:
@@ -83,11 +80,31 @@ class Kinect:
         for row in range(len(self.depth)):
             for col in range(len(self.depth[0])):
                 #print("row:{}, col:{}, indexing from {}:{}, {}:{}".format(row, col, int(row * ROW_DIV), int((row + 1) * ROW_DIV), int(col * COL_DIV), int((col + 1) * COL_DIV)))
-                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].mean() / 8
-                self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
-                #print(self.depth[row][col])
-                #self.depth[row][col] = self.depth[row][col].invert()
-                #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])
+                self.depth[row][col] = self.temp_depth[int(row * ROW_DIV):int((row + 1) * ROW_DIV), int(col * COL_DIV):int((col + 1) * COL_DIV)].max()
+                #self.depth[row][col] = np.bitwise_xor(self.depth[row][col], 255)
+        
+        self.depth[(self.depth >= 0) & (self.depth < 32)] = 0
+        self.depth[(self.depth >= 32) & (self.depth < 56)] = 32
+        self.depth[(self.depth >= 56) & (self.depth < 72)] = 56
+        self.depth[(self.depth >= 72) & (self.depth < 88)] = 72
+        self.depth[(self.depth >= 88) & (self.depth < 96)] = 88
+        self.depth[(self.depth >= 96) & (self.depth < 104)] = 96
+        self.depth[(self.depth >= 104) & (self.depth < 112)] = 104
+        self.depth[(self.depth >= 112) & (self.depth < 120)] = 112
+        self.depth[(self.depth >= 120) & (self.depth < 128)] = 120
+        self.depth[(self.depth >= 128) & (self.depth < 136)] = 128
+        self.depth[(self.depth >= 136) & (self.depth < 144)] = 136
+        self.depth[(self.depth >= 144) & (self.depth < 152)] = 144
+        self.depth[(self.depth >= 152) & (self.depth < 160)] = 152
+        self.depth[(self.depth >= 160) & (self.depth < 168)] = 160
+        self.depth[(self.depth >= 168) & (self.depth < 184)] = 168
+        self.depth[(self.depth >= 184) & (self.depth < 200)] = 184
+        self.depth[(self.depth >= 200) & (self.depth < 224)] = 200
+        self.depth[(self.depth >= 224) & (self.depth < 256)] = 224
+
+        #print(self.depth[row][col])
+        #self.depth[row][col] = self.depth[row][col].invert()
+        #print(self.temp_depth[row * ROW_DIV:(row + 1) * ROW_DIV,col * COL_DIV:(col + 1) * COL_DIV])
 
 if __name__ == "__main__":
     k = Kinect()

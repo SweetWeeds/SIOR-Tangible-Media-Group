@@ -15,8 +15,8 @@ kinect_form_class = uic.loadUiType("UI/camera.ui")[0]
 audio_form_class = uic.loadUiType("UI/audio.ui")[0]
 snake_form_class = uic.loadUiType("UI/snake.ui")[0]
 
-ROWS = 3
-COLS = 10
+ROWS = 9
+COLS = 9
 def mainThread(k,m):
     while(True):
         k.getDepth()
@@ -62,7 +62,7 @@ class mainWindow(QMainWindow, main_form_class):
             self.a.threadActivate(False)
     def SnakeClicked(self):
         self.mMode = 3
-        dlg = snakeDialog()
+        dlg = snakeDialog(self)
         dlg.exec_()
         if dlg.isBackClicked == True:
             self.mMode = 0
@@ -71,20 +71,22 @@ class mainWindow(QMainWindow, main_form_class):
             # 1. 키넥트
             if(self.mMode == 1):
                 #self.k.getDepth()
-                #print(a.plot3D)
+                #print(self.k.depth)
+                #print('키넥트')
                 self.m.setKinectHeight(self.k.depth)
                 time.sleep(0.0001)
             # 2. 오디오
             elif(self.mMode == 2):
-                self.m.setHeight(self.a.depth)
+                self.m.setKinectHeight(self.a.depth)
                 time.sleep(0.0001)
             # 3. 스네이크
             elif(self.mMode == 3):
-                print("스네잌   ")
-                self.m.setHeight(self.s.map + SERVO_MIN)
-                continue
-            time.sleep(1)
-            continue
+                #print("스네잌   ")
+                self.m.setKinectHeight(self.s.map + SERVO_MIN)
+                #print(self.s.map)
+                #self.m.setKinectHeight(self.s.map)
+                time.sleep(0.0001)
+            time.sleep(0.0001)
 class kinectDialog(QDialog, kinect_form_class):
     isBackClicked = False
     def __init__(self):
@@ -114,7 +116,7 @@ class audioDialog(QDialog, audio_form_class):
 
 class snakeDialog(QDialog, snake_form_class):
     isBackClicked = False
-    def __init__(self):
+    def __init__(self, motherClass):
         super().__init__()
         self.setupUi(self)
         # 전체화면 설정
@@ -127,34 +129,35 @@ class snakeDialog(QDialog, snake_form_class):
         self.downButton.clicked.connect(self.downClicked)
         self.timer = PyQt5.QtCore.QTimer()
         self.timer.timeout.connect(self.update)
-        self.s = Snake()
+        self.motherClass = motherClass
+        #self.s = self.motherClass.s
     def update(self):
-        if self.s.worm.check_ahead_gold(self.s.gold):
-            self.s.worm.move_to_direction(True)
-            self.s.gold.set_position(self.s.get_empty_position())
+        if self.motherClass.s.worm.check_ahead_gold(self.motherClass.s.gold):
+            self.motherClass.s.worm.move_to_direction(True)
+            self.motherClass.s.gold.set_position(self.motherClass.s.get_empty_position())
         else:
-            self.s.worm.move_to_direction(False)
+            self.motherClass.s.worm.move_to_direction(False)
 
-        if self.s.worm.check_collision():
+        if self.motherClass.s.worm.check_collision():
             self.timer.stop()
         else:
-            self.s.draw_matrix()
+            self.motherClass.s.draw_matrix()
             self.timer.start(1000)
     def backClicked(self):
         print("뒤로")
         self.isBackClicked = True
         self.close()
     def startClicked(self):
-        self.s = Snake()
+        self.motherClass.s = Snake()
         self.timer.start(0)
     def leftClicked(self):
-        self.s.worm.set_left()
+        self.motherClass.s.worm.set_left()
     def rightClicked(self):
-        self.s.worm.set_right()
+        self.motherClass.s.worm.set_right()
     def upClicked(self):
-        self.s.worm.set_up()
+        self.motherClass.s.worm.set_up()
     def downClicked(self):
-        self.s.worm.set_down()
+        self.motherClass.s.worm.set_down()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

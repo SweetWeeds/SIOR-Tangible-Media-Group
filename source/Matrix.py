@@ -9,12 +9,11 @@ import threading
 import numpy as np
 
 #BUSNUM = 2
-PCA_MODULE_NUM = 2      # PCA9685의 모듈 갯수
 PCA_CHANNELS = 16       # 모듈 당 채널 수 (제어 가능한 모터 수)
-ROWS = 10                # 행의 수
-COLS = 10                # 열의 수
-SERVO_MIN = 170         # 가장 높은 높이
-SERVO_MAX = 580         # 가장 낮은 높이
+ROWS = 9                # 행의 수
+COLS = 9                # 열의 수
+SERVO_MIN = 100         # 가장 높은 높이
+SERVO_MAX = 450         # 가장 낮은 높이
 ADDR_START = 0x40
 
 # 행렬 객체 (성분 핸들러)
@@ -25,9 +24,9 @@ class Matrix:
         self.mEntryList = list(list() for i in range(rows))
         # 모듈 객체에 Address 할당, Address = 기본 Address | 모듈 번호
         module_num = int((rows * cols) / PCA_CHANNELS) + 1
-        print(module_num)
+        #print(module_num)
         for i in range(module_num):
-            print(i)
+            #print(i)
             try:
                 self.mPCA9685_Module.append(Adafruit_PCA9685.PCA9685(address=ADDR_START|i))
                 self.mPCA9685_Module[-1].set_pwm_freq(50)   # set freq to 60hz
@@ -50,8 +49,14 @@ class Matrix:
                 e.height = h
     """
     def setKinectHeight(self, arg1):
-        arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / 255 + SERVO_MIN)
+        #print(arg1)
+        #print("height")
+        minHeight = np.min(arg1)
+        maxHeight = np.max(arg1)
+
+        arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / (maxHeight - minHeight if (maxHeight - minHeight != 0) else 1) + SERVO_MIN)
         self.setHeight(arg1)
+        #print(arg1)
     def setHeight(self, arg1):
         # if arg1's type is ndarray
         if(type(arg1) == type(np.ndarray(1))):
@@ -80,41 +85,35 @@ class Entry:
     channel = int(-1)
     height = int(0)     # 모터의 높낮이
     speed = int(50)     # 모터의 속도, range 0 ~ 100
-    syncActive = False  # 싱크 작동 여부
-    syncThread = None
+    threadActive = True  # 싱크 작동 여부
     def __init__(self, r, c, m, ch):
         self.row = r             # 성분의 행
         self.col = c             # 성분의 열
         self.module = m          # 모듈 객체
         self.channel = ch        # 모듈에서 할당 된 채널 넘버
         self.applyHeight(SERVO_MIN)
+        self.syncThread = threading.Thread(target=self.syncHeight)
+        self.syncThread.start()
     def syncHeight(self):
         print("[{}][{}] Motor Sync Thread Start (Module Name {}, Channel {})".format(self.row, self.col, self.module, self.channel))
-        while(self.syncActive):
-            try:
-                self.module.set_pwm(self.channel, 0, self.height)
-                #print('[{}][{}] module:{} channel:{}'.format(self.row, self.col, self.module, self.channel))
-            except:
-                print("[ERROR] syncHeight, module: {}, channel:{}, height:{}".format(self.module, self.channel, self.height))
-            time.sleep(0.005)
+        while(True):
+            self.module.set_pwm(self.channel, 0, self.height)
+            time.sleep(0.05)
     def syncActivate(self, Act = True):
-        if(Act and self.syncThread == None):
-            self.syncActive = True
-            self.syncThread = threading.Thread(target=self.syncHeight)
-            self.syncThread.start()
-        elif(Act and self.syncThread != None):
-            print('[ERROR] thread is already exist.')
+        if Act == True:
             return
+        elif self.threadActive == False and Act == True:
+            print("키넥트 스레드 활성화")
+            self.threadActive = True
         else:
-            self.syncActive = False
-            self.syncThread = None
+            self.threadActive = False
     def applyHeight(self, h = -1):
         if h != -1 and h != np.nan:
             self.height = int(h)
 
 if __name__ == "__main__":
     print("매트릭스 모듈 테스트 시작")
-    m = Matrix(9,7)
+    m = Matrix(9,9)
     m.syncActivate()
     m.setHeight(SERVO_MIN)
     while(True):
