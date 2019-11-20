@@ -58,7 +58,7 @@ class Matrix:
         #arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / (maxHeight - minHeight if (maxHeight - minHeight != 0) else 1) + SERVO_MIN)
         arg1 = (arg1 * (SERVO_MAX - SERVO_MIN) / 255 + SERVO_MIN)
         self.setHeight(arg1)
-        #print(arg1)
+        print(arg1)
     def setHeight(self, arg1):
         # if arg1's type is ndarray
         if(type(arg1) == type(np.ndarray(1))):

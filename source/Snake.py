@@ -9,11 +9,15 @@ DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 
+SERVO_MIN = 100         # 가장 높은 높이
+SERVO_MAX = 450         # 가장 낮은 높이
+
+
 class Snake:
     def __init__(self, cell_size = 9):
     
         self.cell_size = cell_size
-        self.map = np.full((cell_size, cell_size), 500, np.uint8)
+        self.map = np.full((cell_size, cell_size), SERVO_MAX, np.uint16)
         self.worm = Worm(self.cell_size)
         self.gold = Gold(self.cell_size)
 
@@ -22,10 +26,10 @@ class Snake:
             self.gold.set_position(self.get_empty_position())
 
     def draw_matrix(self):
-        self.map = np.full((self.cell_size, self.cell_size),500, np.uint8)
+        self.map = np.full((self.cell_size, self.cell_size), SERVO_MAX, np.uint16)
         for wormBody in self.worm.coordinate:
-            self.map[wormBody['y']][wormBody['x']] = 100
-        self.map[self.gold.y][self.gold.x] = 100
+            self.map[wormBody['y']][wormBody['x']] = SERVO_MIN
+        self.map[self.gold.y][self.gold.x] = SERVO_MIN
 
     def check_overlapped_object(self):
         #check gold

@@ -82,7 +82,7 @@ class mainWindow(QMainWindow, main_form_class):
             # 3. 스네이크
             elif(self.mMode == 3):
                 #print("스네잌   ")
-                self.m.setKinectHeight(self.s.map + SERVO_MIN)
+                self.m.setHeight(self.s.map)
                 #print(self.s.map)
                 #self.m.setKinectHeight(self.s.map)
                 time.sleep(0.0001)
