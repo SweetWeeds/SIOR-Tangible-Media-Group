@@ -151,9 +151,9 @@ class snakeDialog(QDialog, snake_form_class):
         self.motherClass.s = Snake()
         self.timer.start(0)
     def leftClicked(self):
-        self.motherClass.s.worm.set_left()
-    def rightClicked(self):
         self.motherClass.s.worm.set_right()
+    def rightClicked(self):
+        self.motherClass.s.worm.set_left()        
     def upClicked(self):
         self.motherClass.s.worm.set_up()
     def downClicked(self):
